@@ -14,5 +14,11 @@ class MyClient(discord.Client):
             end_piece = message.content.split('I am')[-1]
             await message.channel.send(f'Hello{end_piece}! I am dad!')
 
-client = MyClient()
-client.run(os.getenv('TOKEN'))
+
+def main():
+    client = MyClient()
+    client.run(os.getenv('TOKEN'))
+
+
+if __name__ == "__main__":
+    main()
