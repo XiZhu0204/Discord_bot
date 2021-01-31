@@ -1,6 +1,5 @@
-
-
 import discord
+import os
 
 
 class MyClient(discord.Client):
@@ -8,8 +7,12 @@ class MyClient(discord.Client):
         print('Logged on as {0}!'.format(self.user))
 
     async def on_message(self, message):
-        print('Message from {0.author}: {0.content}'.format(message))
+        if message.author == client.user:
+            return
 
+        if "I am" in message.content:
+            end_piece = message.content.split('I am')[-1]
+            await message.channel.send(f'Hello{end_piece}! I am dad!')
 
 client = MyClient()
-client.run("ODAzMDI3NDM1MzM0Nzk1MzE1.YA3zlA.QASxewJ5wU0quaVA16qflxMZcFA")
+client.run(os.getenv('TOKEN'))
