@@ -4,6 +4,8 @@ import os
 import requests
 import json
 
+from lib.keep_online import keep_online
+
 DATE = datetime.date(datetime.MINYEAR, 1, 1)
 DAYS_OF_WEEK = ("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
 FARMABLE_MATS_BY_WEEKDAY = {
@@ -67,6 +69,7 @@ def find_farmable_day(mat):
 
 
 client = MyClient()
+keep_online()
 client.run(os.getenv('TOKEN'))
 
 
