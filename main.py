@@ -12,12 +12,12 @@ working_tz = pytz.timezone("America/Yakutat")
 
 DAYS_OF_WEEK = ("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
 FARMABLE_MATS_BY_WEEKDAY = {
-    "Monday": ("Freedom", "Prosperity", "Decarabian", "Guyun"),
-    "Tuesday": ("Diligence", "Resistance", "Elixir", "Tooth"),
-    "Wednesday": ("Ballad", "Gold", "Aerosiderite", "Gladiator"),
-    "Thursday": ("Freedom", "Prosperity", "Decarabian", "Guyun"),
-    "Friday": ("Diligence", "Resistance", "Elixir", "Tooth"),
-    "Saturday": ("Ballad", "Gold", "Aerosiderite", "Gladiator")
+    "Monday": ("Freedom", "Prosperity", "Tiles", "Pillars"),
+    "Tuesday": ("Diligence", "Resistance", "Balls", "Teeth"),
+    "Wednesday": ("Ballad", "Gold", "Aero", "Shackles"),
+    "Thursday": ("Freedom", "Prosperity", "Tiles", "Pillars"),
+    "Friday": ("Diligence", "Resistance", "Balls", "Teeth"),
+    "Saturday": ("Ballad", "Gold", "Aero", "Shackles")
 }
 
 
@@ -74,5 +74,3 @@ def find_farmable_day(mat):
 client = MyClient()
 keep_online()
 client.run(os.getenv('TOKEN'))
-
-
