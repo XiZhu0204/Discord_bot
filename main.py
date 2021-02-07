@@ -1,25 +1,8 @@
 import discord
-from datetime import datetime
-import pytz
 import os
-import requests
-import json
 
+import lib.data_accessors as d_access
 from lib.keep_online import keep_online
-
-DATE = datetime.now()
-working_tz = pytz.timezone("America/Yakutat")
-
-DAYS_OF_WEEK = ("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
-FARMABLE_MATS_BY_WEEKDAY = {
-    "Monday": ("Freedom", "Prosperity", "Tiles", "Pillars"),
-    "Tuesday": ("Diligence", "Resistance", "Balls", "Teeth"),
-    "Wednesday": ("Ballad", "Gold", "Aero", "Shackles"),
-    "Thursday": ("Freedom", "Prosperity", "Tiles", "Pillars"),
-    "Friday": ("Diligence", "Resistance", "Balls", "Teeth"),
-    "Saturday": ("Ballad", "Gold", "Aero", "Shackles")
-}
-
 
 class MyClient(discord.Client):
     async def on_ready(self):
@@ -42,11 +25,11 @@ class MyClient(discord.Client):
         await message.channel.send(f'Hello{end_piece}! I am dad!')
 
       elif message.content.startswith("!materials"):
-        weekday = DAYS_OF_WEEK[DATE.now(working_tz).weekday()]
+        weekday = d_access.get_weekday
         if weekday == "Sunday":
           await message.channel.send("It's Sunday you cringe kid.")
         else:
-          list_of_mats = get_farmable_mats(weekday)
+          list_of_mats = d_access.get_farmable_mats(weekday)
           response = "You can waste your time today farming:\n"
           for entry in list_of_mats:
             response += entry + "\n"
@@ -55,7 +38,7 @@ class MyClient(discord.Client):
       elif message.content.startswith("!when "):
         mat = message.content.split('!when ')[-1]
         mat = mat.capitalize()
-        list_of_days = find_farmable_day(mat)
+        list_of_days = d_access.find_farmable_day(mat)
         if list_of_days:
           # non empty array, indicating that retrieval was successful
           response = f"Greetings you gacha cringe, {mat} can be farmed on:\n"
@@ -65,20 +48,6 @@ class MyClient(discord.Client):
           await message.channel.send(response)
         else:
           await message.channel.send("Spell correctly xd")
-
-
-def get_farmable_mats(day):
-  return FARMABLE_MATS_BY_WEEKDAY[day]
-
-
-def find_farmable_day(mat):
-  farmable_days = []
-
-  for day in FARMABLE_MATS_BY_WEEKDAY:
-    if mat in FARMABLE_MATS_BY_WEEKDAY[day]:
-      farmable_days.append(day)
-
-  return farmable_days
 
 
 client = MyClient()
