@@ -72,8 +72,7 @@ class MyClient(discord.Client):
         else:
           await message.channel.send("{} is not in the database".format(user))
 
-db.clear()
 client = MyClient()
 keep_online()
-#resin.increment_resin.start()
+resin.increment_resin.start()
 client.run(os.getenv('TOKEN'))
