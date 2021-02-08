@@ -5,7 +5,6 @@ app = Flask('')
 
 @app.route('/')
 def home():
-  # this is called every 5 min
   return "Bot still online"
 
 

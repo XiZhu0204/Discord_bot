@@ -53,7 +53,6 @@ class MyClient(discord.Client):
 
       elif message.content.startswith("!resin set "):
         user = message.author.name
-        #print(message.content.split("!resin set ")[-1])
         try:
           amount = int(message.content.split("!resin set ")[-1])
         except ValueError:
