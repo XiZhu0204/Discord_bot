@@ -67,7 +67,7 @@ class MyClient(discord.Client):
         amount = resin.get_resin(user)
 
         if amount is not None:
-          await message.channel.send("{} has {} resin".format(user, amount))
+          await message.channel.send("{} has about {} resin".format(user, amount))
         else:
           await message.channel.send("{} is not in the database".format(user))
 
