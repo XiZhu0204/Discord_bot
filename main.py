@@ -4,7 +4,6 @@ import os
 import lib.data_accessors as d_access
 import lib.resin_tracker as resin
 from lib.keep_online import keep_online
-from replit import db
 
 class MyClient(discord.Client):
     async def on_ready(self):
