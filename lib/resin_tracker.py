@@ -2,8 +2,13 @@ from replit import db
 from discord.ext import tasks
 
 def set_resin(user, amount):
+  if user not in db.keys():
+    db[user] = {
+      "resin": 0,
+      "ping": False
+    }
   db[user]["resin"] = amount
-  print(db[user])
+  
 
 def get_resin(user):
   if user not in db.keys():

@@ -8,7 +8,8 @@ from replit import db
 
 class MyClient(discord.Client):
     async def on_ready(self):
-        print('Logged on as {0}!'.format(self.user))
+      resin.increment_resin.start()
+      print('Logged on as {0}!'.format(self.user))
 
     async def on_message(self, message):
       if message.author == client.user:
@@ -74,5 +75,4 @@ class MyClient(discord.Client):
 
 client = MyClient()
 keep_online()
-resin.increment_resin.start()
 client.run(os.getenv('TOKEN'))
