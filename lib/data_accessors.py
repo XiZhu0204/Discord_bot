@@ -11,6 +11,9 @@ with open("data.json") as f:
 def get_weekday():
   return DATA["weekday"][DATE.now(working_tz).weekday()]
 
+def get_material_list():
+  return DATA["mats_names"]
+
 def get_farmable_mats(day):
   return DATA["mats_by_weekday"][day]
 
@@ -21,4 +24,4 @@ def find_farmable_day(mat):
     if mat in DATA["mats_by_weekday"][day]:
       farmable_days.append(day)
 
-  return farmable_days  
+  return farmable_days

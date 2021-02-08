@@ -1,12 +1,13 @@
 {
   "weekday": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+  "mats_names": "Freedom\nProsperity\nDiligence\nResistance\nBallad\nGold\nTiles\nPillars\nElixir\nTeeth\nAero\nShackles",
   "mats_by_weekday": 
   {
     "Monday": ["Freedom", "Prosperity", "Tiles", "Pillars"],
-    "Tuesday": ["Diligence", "Resistance", "Balls", "Teeth"],
+    "Tuesday": ["Diligence", "Resistance", "Elixir", "Teeth"],
     "Wednesday": ["Ballad", "Gold", "Aero", "Shackles"],
     "Thursday": ["Freedom", "Prosperity", "Tiles", "Pillars"],
     "Friday": ["Diligence", "Resistance", "Balls", "Teeth"],
     "Saturday": ["Ballad", "Gold", "Aero", "Shackles"]
-  },
+  }
 }

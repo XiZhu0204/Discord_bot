@@ -2,7 +2,9 @@ import discord
 import os
 
 import lib.data_accessors as d_access
+import lib.resin_tracker as resin
 from lib.keep_online import keep_online
+from replit import db
 
 class MyClient(discord.Client):
     async def on_ready(self):
@@ -25,7 +27,7 @@ class MyClient(discord.Client):
         await message.channel.send(f'Hello{end_piece}! I am dad!')
 
       elif message.content.startswith("!materials"):
-        weekday = d_access.get_weekday
+        weekday = d_access.get_weekday()
         if weekday == "Sunday":
           await message.channel.send("It's Sunday you cringe kid.")
         else:
@@ -47,9 +49,31 @@ class MyClient(discord.Client):
           response += "Sunday"
           await message.channel.send(response)
         else:
-          await message.channel.send("Spell correctly xd")
+          await message.channel.send("Spell correctly xd. The materials list is \n{}".format(d_access.get_material_list()))
 
+      elif message.content.startswith("!resin set "):
+        user = message.author.name
+        #print(message.content.split("!resin set ")[-1])
+        try:
+          amount = int(message.content.split("!resin set ")[-1])
+        except ValueError:
+          await message.channel.send("Resin amount must be an integer.")
+        
+        resin.set_resin(user, amount)
+        await message.channel.send("Resin set at {} for {}".format(amount, user))
 
+      elif message.content.startswith("!resin get"):
+        print("potato")
+        user = message.author.name
+        amount = resin.get_resin(user)
+
+        if amount is not None:
+          await message.channel.send("{} has {} resin".format(user, amount))
+        else:
+          await message.channel.send("{} is not in the database".format(user))
+
+db.clear()
 client = MyClient()
 keep_online()
+#resin.increment_resin.start()
 client.run(os.getenv('TOKEN'))
