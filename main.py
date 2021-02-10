@@ -6,8 +6,6 @@ import lib.resin_tracker as resin
 from lib.keep_online import keep_online
 
 client = discord.Client()
-keep_online()
-client.run(os.getenv('TOKEN'))
 
 @client.event
 async def on_ready():
@@ -77,4 +75,5 @@ async def on_message(message):
       await message.channel.send("{} is not in the database".format(user))
 
 
-
+keep_online()
+client.run(os.getenv('TOKEN'))
