@@ -1,16 +1,19 @@
 from discord.ext import commands
 import os
 
+
 import lib.data_accessors as d_access
 import lib.resin_tracker as resin
+import lib.pretty_prints as pprint
 from lib.keep_online import keep_online
+
 
 bot = commands.Bot(command_prefix = "!")
 
 @bot.event
 async def on_ready():
   resin.increment_resin.start()
-  print('Logged on as {0}!'.format(bot.user))
+  print(f"Logged on as {bot.user}!")
 
 
 @bot.event
@@ -37,13 +40,12 @@ async def on_message(message):
 async def materials(ctx):
   weekday = d_access.get_weekday()
   if weekday == "Sunday":
-    await ctx.send("```\nIt's Sunday you cringe kid.\n```")
+    response = pprint.code_block_str("It's Sunday you cringe kid.")
+    await ctx.send(response)
   else:
     list_of_mats = d_access.get_farmable_mats(weekday)
-    response = "```\nYou can waste your time today farming:\n"
-    for entry in list_of_mats:
-      response += entry + "\n"
-    response += "\n```"
+    header = "You can waste your time today farming:"
+    response = pprint.code_block_list(list_of_mats, header = header)
     await ctx.send(response)
 
 
@@ -53,21 +55,23 @@ async def when(ctx, arg):
   list_of_days = d_access.find_farmable_day(mat)
   if list_of_days:
     # non empty array, indicating that retrieval was successful
-    response = f"```\nGreetings you gacha cringe, {mat} can be farmed on:\n"
-    for entry in list_of_days:
-      response += entry + "\n"
-    response += "Sunday\n```"
+    header = f"Greetings you gacha cringe, {mat} can be farmed on:"
+    response = pprint.code_block_list(list_of_days, header = header, footer = "Sunday")
     await ctx.send(response)
   else:
-    await ctx.send("Spell correctly xd. The materials list is \n{}".format(d_access.get_material_list()))
+    material_list = d_access.get_material_list()
+    header = "Spell correctly xd. The materials list is:"
+    response = pprint.code_block_list(material_list, header = header)
+    await ctx.send(response)
 
 
 ##### Work in Progress
+#### add pretty print functions
 '''
 @bot.command()
 async def resin(ctx):
   user = ctx.author.name
-
+  
   elif message.content.startswith("!resin set "):
     user = message.author.name
     try:
