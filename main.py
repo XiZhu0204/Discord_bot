@@ -3,7 +3,7 @@ import os
 
 
 import lib.data_accessors as d_access
-import lib.resin_tracker as resin
+import lib.resin_tracker as resin_track
 import lib.pretty_prints as pprint
 from lib.keep_online import keep_online
 
@@ -12,7 +12,7 @@ bot = commands.Bot(command_prefix = "!")
 
 @bot.event
 async def on_ready():
-  resin.increment_resin.start()
+  resin_track.increment_resin.start()
   print(f"Logged on as {bot.user}!")
 
 
@@ -66,12 +66,58 @@ async def when(ctx, arg):
 
 
 ##### Work in Progress
-#### add pretty print functions
-'''
 @bot.command()
 async def resin(ctx):
   user = ctx.author.name
+  amount = resin_track.get_resin(user)
+
+  # event handling func
+  async def send_msg_and_handle_events(msg):
+    msg = await ctx.send(msg)
+    await msg.add_reaction("⬆️")
+    
+    def check_for_set(reaction, author):
+      return author == ctx.author and str(reaction.emoji) == "⬆️"
+
+    try:
+      reaction, author = await bot.wait_for("reaction_add", timeout = 60.0, check = check_for_set)
+    except:
+      pass
+    else:
+      await ctx.send(pprint.block_quote_str("Enter resin amount"))
+
+      def check_for_resin_amount(m):
+        try:
+          n = int(m.content)
+        except ValueError:
+          ctx.send(pprint.block_quote_str("Must be an integer"))
+          return False
+        else:
+          return m.author == ctx.author and m.channel == ctx.channel
+
+      in_val = await bot.wait_for("message", check = check_for_resin_amount)
+      in_amount = int(in_val.content)
+      resin_track.set_resin(user, in_amount)
+
+      header = "Resin set at"
+      footer = f"for {user}"
+      resp = pprint.block_quote_str(in_amount, header = header, footer = footer)
+      await ctx.send(resp)
+    # end event handlng func
   
+  if amount is not None:
+    header = f"{user} has about"
+    footer = "resin"
+    footer += "\nReact with ⬆️ to set your resin amount."
+    response = pprint.block_quote_str(str(amount), header = header, footer = footer)
+    await send_msg_and_handle_events(response)
+  else:
+    main_str = f"{user} is not in the database"
+    footer = "React with ⬆️ to add your resin amount."
+    response = pprint.block_quote_str(main_str, footer = footer)
+    await send_msg_and_handle_events(response)
+
+''''
   elif message.content.startswith("!resin set "):
     user = message.author.name
     try:
