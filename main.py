@@ -82,7 +82,7 @@ async def resin(ctx):
     try:
       reaction, author = await bot.wait_for("reaction_add", timeout = 60.0, check = check_for_set)
     except asyncio.TimeoutError:
-      await msg.remove("⬆️")
+      await msg.remove_reaction("⬆️", bot.user)
     else:
       await ctx.send(pprint.block_quote_str("Enter resin amount"))
 
@@ -90,26 +90,29 @@ async def resin(ctx):
         try:
           n = int(m.content)
         except ValueError:
-          ctx.send(pprint.block_quote_str("Must be an integer"))
+          raise Exception(pprint.block_quote_str("Must be an integer"))
           return False
         else:
           if n < 0 or n > 160:
-            ctx.send(pprint.block_quote_str("Must be valid amount Darien."))
+            raise Exception(pprint.block_quote_str("Must be valid resin amount"))
+            return False
           return m.author == ctx.author and m.channel == ctx.channel
 
       try:
         in_val = await bot.wait_for("message", timeout = 60.0, check = check_for_resin_amount)
       except asyncio.TimeoutError:
-        await ctx.send("Soo slow, timed out. Try again")
+        await ctx.send("Too slow, timed out. Try again")
+      except Exception as e:
+        await ctx.send(e.args[0])
       else:
         in_amount = int(in_val.content)
         resin_track.set_resin(user, in_amount)
 
-      header = "Resin set at"
-      footer = f"for {user}"
-      resp = pprint.block_quote_str(in_amount, header = header, footer = footer)
-      await ctx.send(resp)
-    # end event handlng func
+        header = "Resin set at"
+        footer = f"for {user}"
+        resp = pprint.block_quote_str(in_amount, header = header, footer = footer)
+        await ctx.send(resp)
+    # end event handling func
   
   if amount is not None:
     header = f"{user} has about"
@@ -122,27 +125,6 @@ async def resin(ctx):
     footer = "React with ⬆️ to add your resin amount."
     response = pprint.block_quote_str(main_str, footer = footer)
     await send_msg_and_handle_events(response)
-
-''''
-  elif message.content.startswith("!resin set "):
-    user = message.author.name
-    try:
-      amount = int(message.content.split("!resin set ")[-1])
-    except ValueError:
-      await message.channel.send("Resin amount must be an integer.")
-        
-    resin.set_resin(user, amount)
-    await message.channel.send("Resin set at {} for {}".format(amount, user))
-
-  elif message.content.startswith("!resin get"):
-    user = message.author.name
-    amount = resin.get_resin(user)
-
-    if amount is not None:
-      await message.channel.send("{} has about {} resin".format(user, amount))
-    else:
-      await message.channel.send("{} is not in the database".format(user))
-'''
 
 keep_online()
 bot.run(os.getenv('TOKEN'))
