@@ -1,6 +1,6 @@
 from discord.ext import commands
 import os
-
+import asyncio
 
 import lib.data_accessors as d_access
 import lib.resin_tracker as resin_track
@@ -81,8 +81,8 @@ async def resin(ctx):
 
     try:
       reaction, author = await bot.wait_for("reaction_add", timeout = 60.0, check = check_for_set)
-    except:
-      pass
+    except asyncio.TimeoutError:
+      await msg.remove("⬆️")
     else:
       await ctx.send(pprint.block_quote_str("Enter resin amount"))
 
@@ -93,11 +93,17 @@ async def resin(ctx):
           ctx.send(pprint.block_quote_str("Must be an integer"))
           return False
         else:
+          if n < 0 or n > 160:
+            ctx.send(pprint.block_quote_str("Must be valid amount Darien."))
           return m.author == ctx.author and m.channel == ctx.channel
 
-      in_val = await bot.wait_for("message", check = check_for_resin_amount)
-      in_amount = int(in_val.content)
-      resin_track.set_resin(user, in_amount)
+      try:
+        in_val = await bot.wait_for("message", timeout = 60.0, check = check_for_resin_amount)
+      except asyncio.TimeoutError:
+        await ctx.send("Soo slow, timed out. Try again")
+      else:
+        in_amount = int(in_val.content)
+        resin_track.set_resin(user, in_amount)
 
       header = "Resin set at"
       footer = f"for {user}"
