@@ -35,17 +35,21 @@ def noti_off(user):
 async def increment_resin(bot):
   for user in db.keys():
     user_data = db[user]
+
     if user_data["resin"] < 160:
       user_data["resin"] += 1
-      db[user] = user_data
     
     if "noti" in user_data:
-      if user_data["noti"]["amount"] >= user_data["resin"] and not user_data["noti"]["notified"]:
-        user_data["noti"]["notified"] = True
-        db[user] = user_data
-        channel = bot.get_channel(805552076763562005)
-        user = user_data["noti"]["id"]
-        res_amount = user_data["resin"]
-        user_ping = f"<@!{user}>"
-        message = f"{user_ping}, you have {res_amount} resin."
-        await channel.send(pprint.block_quote_str(message))
+      noti_amount = user_data["noti"]["amount"]
+      res_amount = user_data["resin"]
+      if res_amount >= noti_amount:
+        if not user_data["noti"]["notified"]:
+          user_data["noti"]["notified"] = True
+          db[user] = user_data
+          channel = bot.get_channel(805552076763562005)
+          user = user_data["noti"]["id"]
+          user_ping = f"<@!{user}>"
+          message = f"{user_ping}, you have {res_amount} resin."
+          await channel.send(pprint.block_quote_str(message))
+    
+    db[user] = user_data

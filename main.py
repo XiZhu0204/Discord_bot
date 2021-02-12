@@ -2,6 +2,8 @@ from discord.ext import commands
 import os
 import asyncio
 import time
+from replit import db
+
 
 import lib.data_accessors as d_access
 import lib.resin_tracker as resin_track
@@ -196,7 +198,6 @@ async def resin(ctx):
     response = pprint.block_quote_str(main_str, footer = footer)
     message = await ctx.send(response)
     await handle_set(message)
-
 
 keep_online()
 bot.run(os.getenv('TOKEN'))
