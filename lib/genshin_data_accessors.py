@@ -1,6 +1,7 @@
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 import pytz
+import time
 
 import lib.pretty_prints as pprint
 
@@ -40,15 +41,32 @@ async def materials_cmd(ctx):
     await ctx.send(response)
 
 async def when_cmd(ctx, arg):
-  mat = arg.capitalize()
-  list_of_days = find_farmable_day(mat)
-  if list_of_days:
-    # non empty array, indicating that retrieval was successful
-    header = f"Greetings you gacha cringe, {mat} can be farmed on:"
-    response = pprint.code_block_list(list_of_days, header = header, footer = "Sunday")
+  arg = arg.capitalize()
+  material_list = get_material_list()
+  if arg in material_list:
+    list_of_days = find_farmable_day(arg)
+    if list_of_days:
+      # non empty array, indicating that retrieval was successful
+      header = f"Greetings you gacha cringe, {arg} can be farmed on:"
+      response = pprint.code_block_list(list_of_days, header = header, footer = "Sunday")
+      await ctx.send(response)
+    else:
+      response = pprint.code_block_str("Unexpected error. Try again.")
+      await ctx.send(response)
+  elif arg == "Reset":
+    tomorrow = datetime.now(working_tz) + timedelta(days = 1)
+    reset = datetime(year = tomorrow.year, month = tomorrow.month, day = tomorrow.day,
+                      hour = 0, minute = 0, second = 0, tzinfo = working_tz)
+    time_till_reset = reset - datetime.now(working_tz)
+    formattable_time_till_reset = time.gmtime(time_till_reset.total_seconds())
+    time_till_reset_str = time.strftime('%H:%M', formattable_time_till_reset)
+
+    header = "There are"
+    footer = "until daily reset."
+    response = pprint.code_block_str(time_till_reset_str, header = header, footer = footer)
     await ctx.send(response)
   else:
-    material_list = get_material_list()
     header = "Spell correctly xd. The materials list is:"
-    response = pprint.code_block_list(material_list, header = header)
+    footer = "\nor get the time till daily reset with:\nReset"
+    response = pprint.code_block_list(material_list, header = header, footer = footer)
     await ctx.send(response)
