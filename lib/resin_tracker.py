@@ -1,6 +1,8 @@
 from replit import db
 from discord.ext import tasks
 
+import lib.pretty_prints as pprint
+
 def set_resin(user, amount):
   if user not in db.keys():
     db[user] = {
@@ -9,6 +11,8 @@ def set_resin(user, amount):
   
   user_data = db[user]
   user_data["resin"] = amount
+  if "noti" in user_data:
+    user_data["noti"]["notified"] = False
   db[user] = user_data
 
 def get_resin(user):
@@ -17,17 +21,31 @@ def get_resin(user):
 
   return db[user]["resin"]
 
-def set_noti_value(user, amount):
+def set_noti_value(user, amount, user_id):
   user_data = db[user]
-  user_data["noti"] = amount
+  user_data["noti"] = {"amount": amount, "id": user_id, "notified": False}
   db[user] = user_data
 
+def noti_off(user):
+  user_data = db[user]
+  user_data.pop("noti", None)
+  db[user] = user_data
 
-@tasks.loop(minutes = 8.0)
-async def increment_resin():
+@tasks.loop(seconds = 3.0)
+async def increment_resin(bot):
   for user in db.keys():
     user_data = db[user]
     if user_data["resin"] < 160:
       user_data["resin"] += 1
       db[user] = user_data
-  
+    
+    if "noti" in user_data:
+      if user_data["noti"]["amount"] >= user_data["resin"] and not user_data["noti"]["notified"]:
+        user_data["noti"]["notified"] = True
+        db[user] = user_data
+        channel = bot.get_channel(805552076763562005)
+        user = user_data["noti"]["id"]
+        res_amount = user_data["resin"]
+        user_ping = f"<@!{user}>"
+        message = f"{user_ping}, you have {res_amount} resin."
+        await channel.send(pprint.block_quote_str(message))
