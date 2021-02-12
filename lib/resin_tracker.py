@@ -31,7 +31,7 @@ def noti_off(user):
   user_data.pop("noti", None)
   db[user] = user_data
 
-@tasks.loop(seconds = 3.0)
+@tasks.loop(minutes = 8.0)
 async def increment_resin(bot):
   for user in db.keys():
     user_data = db[user]
