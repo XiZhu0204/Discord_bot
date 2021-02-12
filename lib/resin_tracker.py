@@ -17,6 +17,12 @@ def get_resin(user):
 
   return db[user]["resin"]
 
+def set_noti_value(user, amount):
+  user_data = db[user]
+  user_data["noti"] = amount
+  db[user] = user_data
+
+
 @tasks.loop(minutes = 8.0)
 async def increment_resin():
   for user in db.keys():

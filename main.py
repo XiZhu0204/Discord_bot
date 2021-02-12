@@ -1,14 +1,23 @@
-from discord.ext import commands
+from discord.ext import commands, tasks
 import os
 import asyncio
+import time
 
 import lib.data_accessors as d_access
 import lib.resin_tracker as resin_track
 import lib.pretty_prints as pprint
 from lib.keep_online import keep_online
 
-
 bot = commands.Bot(command_prefix = "!")
+
+SPAM_PREVENTION = set()
+@tasks.loop(seconds = 60.0, count = 1)
+async def add_user_to_process(user):
+  SPAM_PREVENTION.add(user)
+
+@add_user_to_process.after_loop
+async def remove_user(user):
+  SPAM_PREVENTION.remove(user)
 
 @bot.event
 async def on_ready():
@@ -69,24 +78,13 @@ async def when(ctx, arg):
 @bot.command()
 async def resin(ctx):
   user = ctx.author.name
+  if user in SPAM_PREVENTION:
+    await ctx.send("You have an active process, use that one instead.")
+    return
+  add_user_to_process.start(user)
   amount = resin_track.get_resin(user)
 
-  # event handling func
-  async def send_msg_and_handle_events(msg):
-    msg = await ctx.send(msg)
-    await msg.add_reaction("⬆️")
-    
-    def check_for_set(reaction, author):
-      return author == ctx.author and str(reaction.emoji) == "⬆️"
-
-    try:
-      reaction, author = await bot.wait_for("reaction_add", timeout = 60.0, check = check_for_set)
-    except asyncio.TimeoutError:
-      await msg.remove_reaction("⬆️", bot.user)
-    else:
-      await ctx.send(pprint.block_quote_str("Enter resin amount"))
-
-      def check_for_resin_amount(m):
+  def check_for_resin_amount(m):
         try:
           n = int(m.content)
         except ValueError:
@@ -97,6 +95,20 @@ async def resin(ctx):
             raise Exception(pprint.block_quote_str("Must be valid resin amount"))
             return False
           return m.author == ctx.author and m.channel == ctx.channel
+
+  async def handle_set(msg):
+    await msg.add_reaction("⬆️")
+    
+    def check_for_set(reaction, author):
+      return author == ctx.author and str(reaction.emoji) == "⬆️"
+
+    try:
+      reaction, author = await bot.wait_for("reaction_add", timeout = 60.0, check = check_for_set)
+    except asyncio.TimeoutError:
+      await msg.remove_reaction("⬆️", bot.user)
+      await msg.remove_reaction("<:peepoping:809565752768069632>", bot.user)
+    else:
+      await ctx.send(pprint.block_quote_str("Enter resin amount"))
 
       try:
         in_val = await bot.wait_for("message", timeout = 60.0, check = check_for_resin_amount)
@@ -112,19 +124,59 @@ async def resin(ctx):
         footer = f"for {user}"
         resp = pprint.block_quote_str(in_amount, header = header, footer = footer)
         await ctx.send(resp)
-    # end event handling func
+      finally:
+        # stop user from calling set again since wait_for is no longer active
+        await msg.remove_reaction("⬆️", bot.user)
+
+
+  async def handle_notif(msg):
+    await msg.add_reaction("<:peepoping:809565752768069632>")
+    
+    def check_for_noti(reaction, author):
+      return author == ctx.author and str(reaction.emoji) == "<:peepoping:809565752768069632>"
+
+    try:
+      reaction, author = await bot.wait_for("reaction_add", timeout = 60.0, check = check_for_noti)
+    except asyncio.TimeoutError:
+      await msg.remove_reaction("⬆️", bot.user)
+      await msg.remove_reaction("<:peepoping:809565752768069632>", bot.user)
+    else:
+      await ctx.send(pprint.block_quote_str("Enter amount to notify. Default is 150 after 10s timeout."))
+
+      try:
+        in_val = await bot.wait_for("message", timeout = 10.0, check = check_for_resin_amount)
+      except asyncio.TimeoutError:
+        resin_track.set_noti_value(user, 150)
+        await ctx.send(pprint.block_quote_str(f"{user} will be notified at 150 resin"))
+      except Exception as e:
+        await ctx.send(e.args[0])
+      else:
+        in_amount = int(in_val.content)
+        resin_track.set_noti_value(user, in_amount)
+        await ctx.send(pprint.block_quote_str(f"{user} will be notified at {in_amount} resin"))
+      finally:
+        # stop user from calling noti again since wait_for is no longer active
+        await msg.remove_reaction("<:peepoping:809565752768069632>", bot.user)
+
+      
   
   if amount is not None:
     header = f"{user} has about"
     footer = "resin"
     footer += "\nReact with ⬆️ to set your resin amount."
+    footer += "\nReact with <:peepoping:809565752768069632> if you want to be notified at a certain amount."
     response = pprint.block_quote_str(str(amount), header = header, footer = footer)
-    await send_msg_and_handle_events(response)
+    message = await ctx.send(response)
+    await asyncio.gather(
+      handle_set(message),
+      handle_notif(message)
+    )
   else:
     main_str = f"{user} is not in the database"
     footer = "React with ⬆️ to add your resin amount."
     response = pprint.block_quote_str(main_str, footer = footer)
-    await send_msg_and_handle_events(response)
+    message = await ctx.send(response)
+    await handle_set(message)
 
 keep_online()
 bot.run(os.getenv('TOKEN'))
