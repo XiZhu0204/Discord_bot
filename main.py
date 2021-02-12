@@ -81,16 +81,15 @@ async def resin(ctx):
   amount = resin_track.get_resin(user)
 
   def check_for_resin_amount(m):
+      if m.author == ctx.author and m.channel == ctx.channel:
         try:
           n = int(m.content)
         except ValueError:
           raise Exception(pprint.block_quote_str("Must be an integer"))
-          return False
         else:
           if n < 0 or n > 160:
             raise Exception(pprint.block_quote_str("Must be valid resin amount"))
-            return False
-          return m.author == ctx.author and m.channel == ctx.channel
+          return True
   
   async def remove_reactions(msg):
     await msg.remove_reaction("⬆️", bot.user)
