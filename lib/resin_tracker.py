@@ -29,6 +29,22 @@ def get_resin(user):
   return db[user]["resin"]
 
 
+def get_time_to_noti(user):
+  user_data = db[user]
+
+  if "noti" not in user_data or user_data["noti"]["notified"]:
+    return (None, None, None)
+  else:
+    # user opted for notifications and a notification has not been sent
+    # this implies that current resin < notification value
+    noti_amount = user_data["noti"]["amount"]
+    current_resin = user_data["resin"]
+
+    min_till_noti = (noti_amount - current_resin)*8
+    hours = min_till_noti//60
+    minutes = min_till_noti % 60
+    return hours, minutes, noti_amount
+
 def set_noti_value(user, amount, user_id):
   user_data = db[user]
   user_data["noti"] = {"amount": amount, "id": user_id, "notified": False}
@@ -74,8 +90,6 @@ async def resin_cmd(ctx, bot):
       return
   else:
     SPAM_PREVENTION[user] = time.time()
-
-  amount = get_resin(user)
 
   def check_for_resin_amount(m):
       if m.author == ctx.author and m.channel == ctx.channel:
@@ -169,17 +183,25 @@ async def resin_cmd(ctx, bot):
     finally:
       # stop user from calling noti off again since wait_for is no longer active
       await msg.remove_reaction("<:PepeREE:368523735843733516>", bot.user)
-    
+  
+  amount = get_resin(user)
+
   if amount is not None:
-    header = f"{user} has about"
-    end_list = [
+    msg_list = [
       amount,
       "resin",
-      "React with ⬆️ to set your resin amount.",
-      "React with <:peepoping:809565752768069632> if you want to be notified when resin reaches a certain amount.",
-      "React with <:PepeREE:368523735843733516> to turn off notifications."
+      "\n"
     ]
-    response = pprint.block_quote_list(end_list, header = header)
+    noti_hours, noti_minutes, noti_amount = get_time_to_noti(user)
+    if noti_hours:
+      noti_str = f"{user} will reach {noti_amount} resin in {str(noti_hours).zfill(2)}:{str(noti_minutes).zfill(2)} and be notified.\n"
+      msg_list.append(noti_str)
+    
+    header = f"{user} has about"
+    footer = '''React with ⬆️ to set your resin amount.
+    React with <:peepoping:809565752768069632> if you want to be notified when resin reaches a certain amount.
+    React with <:PepeREE:368523735843733516> to turn off notifications.'''
+    response = pprint.block_quote_list(msg_list, header = header)
     message = await ctx.send(response)
     await asyncio.gather(
       handle_set(message),

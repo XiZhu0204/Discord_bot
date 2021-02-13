@@ -54,9 +54,11 @@ async def when_cmd(ctx, arg):
       await ctx.send(response)
   elif arg == "Reset":
     now = datetime.now(working_tz)
-    hours = 24 - now.hour - 1
-    minutes = 60 - now.minute
-    time_till_reset_str = f"{hours}:{minutes}"
+    now_in_min = (now.hour*60) + now.minute
+    time_till_reset = (24*60) - now_in_min
+    hours = time_till_reset//60
+    minutes = time_till_reset % 60
+    time_till_reset_str = f"{str(hours).zfill(2)}:{str(minutes).zfill(2)}"
 
     header = "There are"
     footer = "until daily reset."

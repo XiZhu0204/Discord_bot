@@ -1,2 +1,2 @@
 # Discord_bot
-Discord music bot
+Discord bot with various miscellaneous capabilities
