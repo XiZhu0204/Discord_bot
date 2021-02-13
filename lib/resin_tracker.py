@@ -192,7 +192,7 @@ async def resin_cmd(ctx, bot):
       "resin",
     ]
     noti_hours, noti_minutes, noti_amount = get_time_to_noti(user)
-    if noti_hours:
+    if noti_hours is not None:
       noti_str = f"{user} will reach {noti_amount} resin in {str(noti_hours).zfill(2)}:{str(noti_minutes).zfill(2)} and be notified.\n"
       msg_list.append(noti_str)
     

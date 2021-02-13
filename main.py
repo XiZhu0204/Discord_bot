@@ -1,6 +1,8 @@
 from discord.ext import commands
 import os
+from replit import db
 
+print(db["Ascor"])
 from lib.genshin_data_accessors import materials_cmd, when_cmd
 from lib.resin_tracker import increment_resin, resin_cmd
 from lib.keep_online import keep_online
