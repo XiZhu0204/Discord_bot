@@ -1,7 +1,6 @@
 import json
-from datetime import datetime, timedelta
+from datetime import datetime
 import pytz
-import time
 
 import lib.pretty_prints as pprint
 
@@ -54,12 +53,10 @@ async def when_cmd(ctx, arg):
       response = pprint.code_block_str("Unexpected error. Try again.")
       await ctx.send(response)
   elif arg == "Reset":
-    tomorrow = datetime.now(working_tz) + timedelta(days = 1)
-    reset = datetime(year = tomorrow.year, month = tomorrow.month, day = tomorrow.day,
-                      hour = 0, minute = 0, second = 0, tzinfo = working_tz)
-    time_till_reset = reset - datetime.now(working_tz)
-    formattable_time_till_reset = time.gmtime(time_till_reset.total_seconds())
-    time_till_reset_str = time.strftime('%H:%M', formattable_time_till_reset)
+    now = datetime.now(working_tz)
+    hours = 24 - now.hour - 1
+    minutes = 60 - now.minute
+    time_till_reset_str = f"{hours}:{minutes}"
 
     header = "There are"
     footer = "until daily reset."
