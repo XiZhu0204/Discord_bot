@@ -190,7 +190,6 @@ async def resin_cmd(ctx, bot):
     msg_list = [
       amount,
       "resin",
-      "\n"
     ]
     noti_hours, noti_minutes, noti_amount = get_time_to_noti(user)
     if noti_hours:
@@ -198,10 +197,8 @@ async def resin_cmd(ctx, bot):
       msg_list.append(noti_str)
     
     header = f"{user} has about"
-    footer = '''React with ⬆️ to set your resin amount.
-    React with <:peepoping:809565752768069632> if you want to be notified when resin reaches a certain amount.
-    React with <:PepeREE:368523735843733516> to turn off notifications.'''
-    response = pprint.block_quote_list(msg_list, header = header)
+    footer = "React with ⬆️ to set your resin amount.\nReact with <:peepoping:809565752768069632> if you want to be notified when resin reaches a certain amount.\nReact with <:PepeREE:368523735843733516> to turn off notifications."
+    response = pprint.block_quote_list(msg_list, header = header, footer = footer)
     message = await ctx.send(response)
     await asyncio.gather(
       handle_set(message),
