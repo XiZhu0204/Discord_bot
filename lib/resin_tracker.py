@@ -45,6 +45,14 @@ def get_time_to_noti(user):
     minutes = min_till_noti % 60
     return hours, minutes, noti_amount
 
+def generate_time_to_noti_msg(user):
+  noti_hours, noti_minutes, noti_amount = get_time_to_noti(user)
+  if noti_hours is not None:
+    noti_str = f"{user} will reach {noti_amount} resin in {str(noti_hours).zfill(2)}:{str(noti_minutes).zfill(2)} and be notified.\n"
+    return noti_str
+  else:
+    return None
+
 def set_noti_value(user, amount, user_id):
   user_data = db[user]
   user_data["noti"] = {"amount": amount, "id": user_id, "notified": False}
@@ -132,6 +140,9 @@ async def resin_cmd(ctx, bot):
 
         header = "Resin set at"
         footer = f"for {user}"
+        noti_str = generate_time_to_noti_msg(user)
+        if noti_str:
+          footer += f"\n{noti_str}"
         resp = pprint.block_quote_str(in_amount, header = header, footer = footer)
         await ctx.send(resp)
       finally:
@@ -191,9 +202,8 @@ async def resin_cmd(ctx, bot):
       amount,
       "resin",
     ]
-    noti_hours, noti_minutes, noti_amount = get_time_to_noti(user)
-    if noti_hours is not None:
-      noti_str = f"{user} will reach {noti_amount} resin in {str(noti_hours).zfill(2)}:{str(noti_minutes).zfill(2)} and be notified.\n"
+    noti_str = generate_time_to_noti_msg(user)
+    if noti_str:
       msg_list.append(noti_str)
     
     header = f"{user} has about"
