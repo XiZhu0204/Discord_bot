@@ -4,10 +4,9 @@ import time
 from replit import db
 from discord.ext import tasks
 
-import lib.pretty_prints as pprint
+import lib.common.pretty_prints as pprint
 
 SPAM_PREVENTION = {}
-
 
 def set_resin(user, amount):
   if user not in db.keys():

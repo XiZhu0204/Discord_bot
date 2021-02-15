@@ -1,10 +1,9 @@
 from discord.ext import commands
 import os
-from replit import db
 
-print(db["Ascor"])
 from lib.genshin_data_accessors import materials_cmd, when_cmd
 from lib.resin_tracker import increment_resin, resin_cmd
+from lib.MAL_request import ani_today_cmd
 from lib.keep_online import keep_online
 
 bot = commands.Bot(command_prefix = "!")
@@ -49,6 +48,9 @@ async def when(ctx, arg):
 async def resin(ctx):
   await resin_cmd(ctx, bot)
 
+@bot.command()
+async def weeb(ctx):
+  await ani_today_cmd(ctx)
 
 keep_online()
 bot.run(os.getenv('TOKEN'))

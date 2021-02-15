@@ -1,17 +1,11 @@
 import json
-from datetime import datetime
-import pytz
 
-import lib.pretty_prints as pprint
+import lib.common.pretty_prints as pprint
+import lib.common.time_functions as time_func
 
-DATE = datetime.now()
-working_tz = pytz.timezone("America/Yakutat")
 
 with open("data.json") as f:
   DATA = json.load(f)
-
-def get_weekday():
-  return DATA["weekday"][DATE.now(working_tz).weekday()]
 
 def get_material_list():
   return DATA["mats_names"]
@@ -29,7 +23,7 @@ def find_farmable_day(mat):
   return farmable_days
 
 async def materials_cmd(ctx):
-  weekday = get_weekday()
+  weekday = time_func.get_weekday()
   if weekday == "Sunday":
     response = pprint.code_block_str("It's Sunday you cringe kid.")
     await ctx.send(response)
@@ -53,11 +47,7 @@ async def when_cmd(ctx, arg):
       response = pprint.code_block_str("Unexpected error. Try again.")
       await ctx.send(response)
   elif arg == "Reset":
-    now = datetime.now(working_tz)
-    now_in_min = (now.hour*60) + now.minute
-    time_till_reset = (24*60) - now_in_min
-    hours = time_till_reset//60
-    minutes = time_till_reset % 60
+    hours, minutes = time_func.hours_minutes_till_midnight()
     time_till_reset_str = f"{str(hours).zfill(2)}:{str(minutes).zfill(2)}"
 
     header = "There are"
