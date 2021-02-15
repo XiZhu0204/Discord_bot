@@ -35,7 +35,7 @@ async def on_message(message):
 
 
 @bot.command()
-async def materials(ctx):
+async def mats(ctx):
   await materials_cmd(ctx)
 
 
