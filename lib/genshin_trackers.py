@@ -5,17 +5,21 @@ from replit import db
 from discord.ext import tasks
 
 import lib.common.pretty_prints as pprint
+import lib.common.time_functions as time_func
 
 SPAM_PREVENTION = {}
+WEEK_IN_SECONDS = 604800
 
-def set_resin(user, amount):
+def set_resin(user, amount, user_id):
   if user not in db.keys():
     db[user] = {
-      "resin": 0
+      "resin": 0,
+      "id": user_id
     }
   
   user_data = db[user]
   user_data["resin"] = amount
+  user_data["id"] = user_id
   if "noti" in user_data:
     user_data["noti"]["notified"] = False
   db[user] = user_data
@@ -44,6 +48,7 @@ def get_time_to_noti(user):
     minutes = min_till_noti % 60
     return hours, minutes, noti_amount
 
+
 def generate_time_to_noti_msg(user):
   noti_hours, noti_minutes, noti_amount = get_time_to_noti(user)
   if noti_hours is not None:
@@ -52,9 +57,10 @@ def generate_time_to_noti_msg(user):
   else:
     return None
 
-def set_noti_value(user, amount, user_id):
+
+def set_noti_value(user, amount):
   user_data = db[user]
-  user_data["noti"] = {"amount": amount, "id": user_id, "notified": False}
+  user_data["noti"] = {"amount": amount, "notified": False}
   db[user] = user_data
 
 
@@ -64,13 +70,46 @@ def noti_off(user):
   db[user] = user_data
 
 
+def set_transformer_used(user, user_id):
+  if user not in db.keys():
+    db[user] = {
+      "transformer_used": None,
+      "id": user_id
+    }
+  
+  current_time = time_func.get_current_time_for_db()
+  user_data = db[user]
+  user_data["transformer_used"] = current_time
+  user_data["id"] = user_id
+  db[user] = user_data
+  
+
 @tasks.loop(minutes = 8.0)
 async def db_update(bot):
   await increment_resin(bot)
-  await check_transformers()
+  await check_transformers(bot)
 
-async def check_transformers():
-  pass
+
+async def check_transformers(bot):
+  current_time = time_func.get_current_time()
+  for user in db.keys():
+    user_data = db[user]
+
+    if "transformer_used" in user_data:
+      print("potato")
+      time_used = time_func.convert_db_time_storage_to_datetime(user_data["transformer_used"])
+
+      seconds_passed = time_func.get_difference_in_seconds(current_time, time_used)
+      print(seconds_passed)
+      if seconds_passed > WEEK_IN_SECONDS:
+        channel = bot.get_channel(805552076763562005)
+        user_id = user_data["id"]
+        user_ping = f"<@!{user_id}>"
+        message = f"{user_ping}, your transformer has come off CD."
+        await channel.send(pprint.block_quote_str(message))
+        user_data.pop("transformer_used", None)
+        db[user] = user_data
+
 
 async def increment_resin(bot):
   for user in db.keys():
@@ -87,8 +126,8 @@ async def increment_resin(bot):
           user_data["noti"]["notified"] = True
           db[user] = user_data
           channel = bot.get_channel(805552076763562005)
-          user = user_data["noti"]["id"]
-          user_ping = f"<@!{user}>"
+          user_id = user_data["id"]
+          user_ping = f"<@!{user_id}>"
           message = f"{user_ping}, you have {res_amount} resin."
           await channel.send(pprint.block_quote_str(message))
     
@@ -142,7 +181,7 @@ async def resin_cmd(ctx, bot):
         await ctx.send(e.args[0])
       else:
         in_amount = int(in_val.content)
-        set_resin(user, in_amount)
+        set_resin(user, in_amount, ctx.author.id)
 
         header = "Resin set at"
         footer = f"for {user}"
@@ -172,13 +211,13 @@ async def resin_cmd(ctx, bot):
       try:
         in_val = await bot.wait_for("message", timeout = 30.0, check = check_for_resin_amount)
       except asyncio.TimeoutError:
-        set_noti_value(user, 150, ctx.author.id)
+        set_noti_value(user, 150)
         await ctx.send(pprint.block_quote_str(f"{user} will be notified at 150 resin"))
       except Exception as e:
         await ctx.send(e.args[0])
       else:
         in_amount = int(in_val.content)
-        set_noti_value(user, in_amount, ctx.author.id)
+        set_noti_value(user, in_amount)
         await ctx.send(pprint.block_quote_str(f"{user} will be notified at {in_amount} resin"))
       finally:
         # stop user from calling noti again since wait_for is no longer active
@@ -228,3 +267,11 @@ async def resin_cmd(ctx, bot):
     message = await ctx.send(response)
     await handle_set(message)
     SPAM_PREVENTION.pop(user)
+
+
+async def transformer_cmd(ctx):
+  user = ctx.author.name
+  user_id = ctx.author.id
+
+  set_transformer_used(user, user_id)
+  await ctx.send(pprint.block_quote_str(f"{user} will be notified in 7 days when the transformer is off CD."))

@@ -1,8 +1,10 @@
 from discord.ext import commands
 import os
+from replit import db
 
+print(db["Ascor"])
 from lib.genshin_data_accessors import materials_cmd, when_cmd
-from lib.genshin_trackers import db_update, resin_cmd
+from lib.genshin_trackers import db_update, resin_cmd, transformer_cmd
 from lib.MAL_request import ani_today_cmd
 from lib.keep_online import keep_online
 
@@ -47,6 +49,12 @@ async def when(ctx, arg):
 @bot.command()
 async def resin(ctx):
   await resin_cmd(ctx, bot)
+
+
+@bot.command()
+async def transformer(ctx):
+  await transformer_cmd(ctx)
+
 
 @bot.command()
 async def weeb(ctx):

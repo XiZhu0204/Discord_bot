@@ -122,7 +122,7 @@ description = "Python wrapper for the Jikan API"
 name = "jikanpy"
 optional = false
 python-versions = ">=3.6"
-version = "4.2.2"
+version = "4.3.0"
 
 [package.dependencies]
 aiohttp = "*"
@@ -314,8 +314,8 @@ itsdangerous = [
     {file = "itsdangerous-1.1.0.tar.gz", hash = "sha256:321b033d07f2a4136d3ec762eac9f16a10ccd60f53c0c91af90217ace7ba1f19"},
 ]
 jikanpy = [
-    {file = "jikanpy-4.2.2-py3-none-any.whl", hash = "sha256:8775ad98091677ab57bd91c83139d865ba776c46849c6924efc99051c9cda6ca"},
-    {file = "jikanpy-4.2.2.tar.gz", hash = "sha256:4260679bae945b879ca4ce5441a3e7e5593485dcd519f09c5258760ddb8a995f"},
+    {file = "jikanpy-4.3.0-py3-none-any.whl", hash = "sha256:1e58bb2ec71a8da314cb0e44b759f1898e8b8c7e0c409a4f03e86b96dd10b8ab"},
+    {file = "jikanpy-4.3.0.tar.gz", hash = "sha256:868e173273ea50b28e5d03265e5c30724b2f166777aae33c593b0f4fcb9e2c79"},
 ]
 jinja2 = [
     {file = "Jinja2-2.11.3-py2.py3-none-any.whl", hash = "sha256:03e47ad063331dd6a3f04a43eddca8a966a26ba0c5b7207a9a9e4e08f1b29419"},
