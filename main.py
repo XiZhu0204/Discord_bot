@@ -2,7 +2,7 @@ from discord.ext import commands
 import os
 
 from lib.genshin_data_accessors import materials_cmd, when_cmd
-from lib.resin_tracker import increment_resin, resin_cmd
+from lib.genshin_trackers import db_update, resin_cmd
 from lib.MAL_request import ani_today_cmd
 from lib.keep_online import keep_online
 
@@ -10,7 +10,7 @@ bot = commands.Bot(command_prefix = "!")
 
 @bot.event
 async def on_ready():
-  increment_resin.start(bot)
+  db_update.start(bot)
   print(f"Logged on as {bot.user}!")
 
 

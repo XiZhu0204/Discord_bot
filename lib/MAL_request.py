@@ -1,11 +1,15 @@
 import asyncio
+import pytz
+
 from jikanpy import AioJikan
 
 import lib.common.pretty_prints as pprint
 from lib.common.time_functions import get_weekday
 
+working_tz = pytz.timezone("Asia/Tokyo")
+
 async def ani_today_cmd(ctx):
-  weekday = get_weekday().lower()
+  weekday = get_weekday(working_tz).lower()
   async with AioJikan() as requester:
     ani_tdy = await requester.schedule(weekday)
   animes = []
