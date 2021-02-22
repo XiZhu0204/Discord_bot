@@ -69,15 +69,6 @@ async def join(ctx):
 async def leave(ctx):
   await music.leave_cmd(ctx)
 
-@bot.command()
-async def test(ctx):
-  embed = discord.Embed(title = "Title", description = discord.Embed.Empty, colour = discord.Colour.blue())
-  '''
-  embed.add_field(name = "Test", value = "\u200b", inline = False)
-  embed.add_field(name = "Test", value = "\u200b", inline = False)
-  embed.set_footer(text = "footer")
-  '''
-  await ctx.send(embed = embed)
 
 keep_online()
 bot.run(os.getenv('TOKEN'))

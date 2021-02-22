@@ -106,7 +106,9 @@ async def check_transformers(bot):
         user_id = user_data["id"]
         user_ping = f"<@!{user_id}>"
         message = f"{user_ping}, your transformer has come off CD."
-        await channel.send(pprint.block_quote_str(message))
+
+        response = pprint.embed_str(message)
+        await channel.send(embed = response)
         user_data.pop("transformer_used", None)
         db[user] = user_data
 
@@ -129,7 +131,9 @@ async def increment_resin(bot):
           user_id = user_data["id"]
           user_ping = f"<@!{user_id}>"
           message = f"{user_ping}, you have {res_amount} resin."
-          await channel.send(pprint.block_quote_str(message))
+
+          response = pprint.embed_str(message)
+          await channel.send(embed = response)
     
     db[user] = user_data
 
@@ -139,7 +143,8 @@ async def resin_cmd(ctx, bot):
 
   if user in SPAM_PREVENTION:
     if time.time() - SPAM_PREVENTION[user] < 30.0:
-      await ctx.send(pprint.block_quote_str("You already have an active process, use that instead."))
+      response = pprint.embed_str("You already have an active process, use that instead.")
+      await ctx.send(embed = response)
       return
   else:
     SPAM_PREVENTION[user] = time.time()
@@ -149,10 +154,10 @@ async def resin_cmd(ctx, bot):
         try:
           n = int(m.content)
         except ValueError:
-          raise Exception(pprint.block_quote_str("Must be an integer"))
+          raise Exception(pprint.embed_str("Must be an integer"))
         else:
           if n < 0 or n > 160:
-            raise Exception(pprint.block_quote_str("Must be valid resin amount"))
+            raise Exception(pprint.embed_str("Must be valid resin amount"))
           return True
   
   async def remove_reactions(msg):
@@ -171,14 +176,16 @@ async def resin_cmd(ctx, bot):
     except asyncio.TimeoutError:
       await remove_reactions(msg)
     else:
-      await ctx.send(pprint.block_quote_str("Enter resin amount"))
+      response = pprint.embed_str("Enter resin amount")
+      await ctx.send(embed = response)
 
       try:
         in_val = await bot.wait_for("message", timeout = 30.0, check = check_for_resin_amount)
       except asyncio.TimeoutError:
-        await ctx.send("Too slow, timed out. Try again")
+        response = pprint.embed_str("Too slow, timed out. Try again")
+        await ctx.send(embed = response)
       except Exception as e:
-        await ctx.send(e.args[0])
+        await ctx.send(embed = e.args[0])
       else:
         in_amount = int(in_val.content)
         set_resin(user, in_amount, ctx.author.id)
@@ -188,8 +195,8 @@ async def resin_cmd(ctx, bot):
         noti_str = generate_time_to_noti_msg(user)
         if noti_str:
           footer += f"\n{noti_str}"
-        resp = pprint.block_quote_str(in_amount, header = header, footer = footer)
-        await ctx.send(resp)
+        response = pprint.embed_str(in_amount, header = header, footer = footer)
+        await ctx.send(embed = response)
       finally:
         # stop user from calling set again since wait_for is no longer active
         await msg.remove_reaction("⬆️", bot.user)
@@ -206,19 +213,22 @@ async def resin_cmd(ctx, bot):
     except asyncio.TimeoutError:
       await remove_reactions(msg)
     else:
-      await ctx.send(pprint.block_quote_str("Enter amount to notify. Default is 150 after 10s timeout."))
+      response = pprint.embed_str("Enter amount to notify. Default is 150 after 10s timeout.")
+      await ctx.send(embed = response)
 
       try:
         in_val = await bot.wait_for("message", timeout = 30.0, check = check_for_resin_amount)
       except asyncio.TimeoutError:
         set_noti_value(user, 150)
-        await ctx.send(pprint.block_quote_str(f"{user} will be notified at 150 resin"))
+        response = pprint.embed_str(f"{user} will be notified at 150 resin")
+        await ctx.send(embed = response)
       except Exception as e:
-        await ctx.send(e.args[0])
+        await ctx.send(embed = e.args[0])
       else:
         in_amount = int(in_val.content)
         set_noti_value(user, in_amount)
-        await ctx.send(pprint.block_quote_str(f"{user} will be notified at {in_amount} resin"))
+        response = pprint.embed_str(f"{user} will be notified at {in_amount} resin")
+        await ctx.send(embed = response)
       finally:
         # stop user from calling noti again since wait_for is no longer active
         await msg.remove_reaction("<:peepoping:809565752768069632>", bot.user)
@@ -235,7 +245,8 @@ async def resin_cmd(ctx, bot):
       await remove_reactions(msg)
     else:
       noti_off(user)
-      await ctx.send(pprint.block_quote_str(f"Notifications off for {user}"))
+      response = pprint.embed_str(f"Notifications off for {user}")
+      await ctx.send(embed = response)
     finally:
       # stop user from calling noti off again since wait_for is no longer active
       await msg.remove_reaction("<:PepeREE:368523735843733516>", bot.user)
@@ -245,16 +256,16 @@ async def resin_cmd(ctx, bot):
   if amount is not None:
     msg_list = [
       amount,
-      "resin",
+      "resin"
     ]
     noti_str = generate_time_to_noti_msg(user)
     if noti_str:
       msg_list.append(noti_str)
     
     header = f"{user} has about"
-    footer = "React with ⬆️ to set your resin amount.\nReact with <:peepoping:809565752768069632> if you want to be notified when resin reaches a certain amount.\nReact with <:PepeREE:368523735843733516> to turn off notifications."
-    response = pprint.block_quote_list(msg_list, header = header, footer = footer)
-    message = await ctx.send(response)
+    footer = "\nReact with ⬆️ to set your resin amount.\nReact with <:peepoping:809565752768069632> if you want to be notified when resin reaches a certain amount.\nReact with <:PepeREE:368523735843733516> to turn off notifications."
+    response = pprint.embed_list(msg_list, header = header, footer = footer)
+    message = await ctx.send(embed = response)
     await asyncio.gather(
       handle_set(message),
       handle_notif(message),
@@ -263,8 +274,8 @@ async def resin_cmd(ctx, bot):
   else:
     main_str = f"{user} is not in the database"
     footer = "React with ⬆️ to add your resin amount."
-    response = pprint.block_quote_str(main_str, footer = footer)
-    message = await ctx.send(response)
+    response = pprint.embed_str(main_str, footer = footer)
+    message = await ctx.send(embed = response)
     await handle_set(message)
     SPAM_PREVENTION.pop(user)
 
@@ -274,4 +285,5 @@ async def transformer_cmd(ctx):
   user_id = ctx.author.id
 
   set_transformer_used(user, user_id)
-  await ctx.send(pprint.block_quote_str(f"{user} will be notified in 7 days when the transformer is off CD."))
+  response = pprint.embed_str(f"{user} will be notified in 7 days when the transformer is off CD.")
+  await ctx.send(embed = response)

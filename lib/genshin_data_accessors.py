@@ -27,13 +27,13 @@ def find_farmable_day(mat):
 async def materials_cmd(ctx):
   weekday = time_func.get_weekday(working_tz)
   if weekday == "Sunday":
-    response = pprint.code_block_str("It's Sunday you cringe kid.")
-    await ctx.send(response)
+    response = pprint.embed_str("It's Sunday you cringe kid.")
+    await ctx.send(embed = response)
   else:
     list_of_mats = get_farmable_mats(weekday)
     header = "You can waste your time today farming:"
-    response = pprint.code_block_list(list_of_mats, header = header)
-    await ctx.send(response)
+    response = pprint.embed_list(list_of_mats, header = header)
+    await ctx.send(embed = response)
 
 async def when_cmd(ctx, arg):
   arg = arg.capitalize()
@@ -41,23 +41,23 @@ async def when_cmd(ctx, arg):
   if arg in material_list:
     list_of_days = find_farmable_day(arg)
     if list_of_days:
+      list_of_days.append("Sunday")
       # non empty array, indicating that retrieval was successful
       header = f"Greetings you gacha cringe, {arg} can be farmed on:"
-      response = pprint.code_block_list(list_of_days, header = header, footer = "Sunday")
-      await ctx.send(response)
+      response = pprint.embed_list(list_of_days, header = header)
+      await ctx.send(embed = response)
     else:
-      response = pprint.code_block_str("Unexpected error. Try again.")
-      await ctx.send(response)
+      response = pprint.embed_str("Unexpected error. Try again.")
+      await ctx.send(embed = response)
   elif arg == "Reset":
     hours, minutes = time_func.hours_minutes_till_midnight(working_tz)
-    time_till_reset_str = f"{str(hours).zfill(2)}:{str(minutes).zfill(2)}"
+    time_till_reset_str = f"{str(hours).zfill(2)}:{str(minutes).zfill(2)}\nuntil daily reset"
 
     header = "There are"
-    footer = "until daily reset."
-    response = pprint.code_block_str(time_till_reset_str, header = header, footer = footer)
-    await ctx.send(response)
+    response = pprint.embed_str(time_till_reset_str, header = header)
+    await ctx.send(embed = response)
   else:
     header = "Spell correctly xd. The materials list is:"
     footer = "\nor get the time till daily reset with:\nReset"
-    response = pprint.code_block_list(material_list, header = header, footer = footer)
-    await ctx.send(response)
+    response = pprint.embed_list(material_list, header = header, footer = footer)
+    await ctx.send(embed = response)
