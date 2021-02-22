@@ -13,7 +13,8 @@ async def join_cmd(ctx):
   try:
     await vc.connect()
   except discord.ClientException:
-    await ctx.send(pprint.code_block_str("Bot is already in another voice channel."))
+    response = pprint.embed_str("Bot is already in another voice channel.")
+    await ctx.send(embed = response)
 
 async def leave_cmd(ctx):
   await ctx.voice_client.disconnect()
