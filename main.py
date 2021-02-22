@@ -1,16 +1,17 @@
 from discord.ext import commands
 import os
-
-from lib.genshin_data_accessors import materials_cmd, when_cmd
-from lib.genshin_trackers import db_update, resin_cmd, transformer_cmd
-from lib.MAL_request import ani_today_cmd
+import discord
+import lib.genshin_data_accessors as genshin_data
+import lib.genshin_trackers as genshin_tracker
+import lib.MAL_request as MAL_req
+import lib.music_bot as music
 from lib.keep_online import keep_online
 
 bot = commands.Bot(command_prefix = "!")
 
 @bot.event
 async def on_ready():
-  db_update.start(bot)
+  genshin_tracker.db_update.start(bot)
   print(f"Logged on as {bot.user}!")
 
 
@@ -36,27 +37,47 @@ async def on_message(message):
 
 @bot.command()
 async def mats(ctx):
-  await materials_cmd(ctx)
+  await genshin_data.materials_cmd(ctx)
 
 
 @bot.command()
 async def when(ctx, arg):
-  await when_cmd(ctx, arg)
+  await genshin_data.when_cmd(ctx, arg)
 
 
 @bot.command()
 async def resin(ctx):
-  await resin_cmd(ctx, bot)
+  await genshin_tracker.resin_cmd(ctx, bot)
 
 
 @bot.command()
 async def transformer(ctx):
-  await transformer_cmd(ctx)
+  await genshin_tracker.transformer_cmd(ctx)
 
 
 @bot.command()
 async def weeb(ctx):
-  await ani_today_cmd(ctx)
+  await MAL_req.ani_today_cmd(ctx)
+
+
+@bot.command()
+async def join(ctx):
+  await music.join_cmd(ctx)
+
+
+@bot.command()
+async def leave(ctx):
+  await music.leave_cmd(ctx)
+
+@bot.command()
+async def test(ctx):
+  embed = discord.Embed(title = "Title", description = discord.Embed.Empty, colour = discord.Colour.blue())
+  '''
+  embed.add_field(name = "Test", value = "\u200b", inline = False)
+  embed.add_field(name = "Test", value = "\u200b", inline = False)
+  embed.set_footer(text = "footer")
+  '''
+  await ctx.send(embed = embed)
 
 keep_online()
 bot.run(os.getenv('TOKEN'))
