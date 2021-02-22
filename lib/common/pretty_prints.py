@@ -1,7 +1,13 @@
+<<<<<<< HEAD
 import discord
 
 
 
+=======
+from discord import Embed, Colour
+
+EMPTY = "\u200b"
+>>>>>>> origin/master
 
 def code_block_str(input_str, header = "", footer = ""):
   text = "```\n"
@@ -63,3 +69,35 @@ def block_quote_list(input_list, header = "", footer = ""):
     text += footer
 
   return text
+
+
+def embed_str(in_str, header = "", footer = ""):
+  embed = Embed(colour = Colour.blue())
+
+  if header:
+    embed.add_field(name = header, value = in_str, inline = False)
+  else:
+    embed.add_field(name = EMPTY, value = in_str, inline = False)
+
+  if footer:
+    embed.set_footer(text = footer)
+
+  return embed
+
+
+def embed_list(in_list, header = "", footer = ""):
+  embed = Embed(colour = Colour.blue())
+
+  text = ""
+  for entry in in_list:
+    text += f"{entry}\n"
+
+  if header:
+    embed.add_field(name = header, value = text, inline = False)
+  else:
+    embed.add_field(name = EMPTY, value = text, inline = False)
+
+  if footer:
+    embed.set_footer(text = footer)
+
+  return embed
