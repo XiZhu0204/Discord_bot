@@ -1,6 +1,6 @@
 from discord.ext import commands
 import os
-import discord
+
 import lib.genshin_data_accessors as genshin_data
 import lib.genshin_trackers as genshin_tracker
 import lib.MAL_request as MAL_req

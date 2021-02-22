@@ -52,7 +52,7 @@ def get_time_to_noti(user):
 def generate_time_to_noti_msg(user):
   noti_hours, noti_minutes, noti_amount = get_time_to_noti(user)
   if noti_hours is not None:
-    noti_str = f"{user} will reach {noti_amount} resin in {str(noti_hours).zfill(2)}:{str(noti_minutes).zfill(2)} and be notified.\n"
+    noti_str = f"{user} will reach {noti_amount} resin in {str(noti_hours).zfill(2)}:{str(noti_minutes).zfill(2)} and be notified."
     return noti_str
   else:
     return None
@@ -96,11 +96,9 @@ async def check_transformers(bot):
     user_data = db[user]
 
     if "transformer_used" in user_data:
-      print("potato")
       time_used = time_func.convert_db_time_storage_to_datetime(user_data["transformer_used"])
 
       seconds_passed = time_func.get_difference_in_seconds(current_time, time_used)
-      print(seconds_passed)
       if seconds_passed > WEEK_IN_SECONDS:
         channel = bot.get_channel(805552076763562005)
         user_id = user_data["id"]

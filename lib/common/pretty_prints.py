@@ -1,5 +1,16 @@
+<<<<<<< HEAD
+import discord
+
+
+
+=======
 from discord import Embed, Colour
 
+<<<<<<< HEAD
+=======
+EMPTY = "\u200b"
+>>>>>>> origin/master
+>>>>>>> origin/master
 
 def embed_str(in_str, header = "", footer = ""):
   text = ""
