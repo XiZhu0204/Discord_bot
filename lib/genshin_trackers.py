@@ -106,7 +106,7 @@ async def check_transformers(bot):
         message = f"{user_ping}, your transformer has come off CD."
 
         response = pprint.block_quote_str(message)
-        await channel.send(embed = response)
+        await channel.send(response)
         user_data.pop("transformer_used", None)
         db[user] = user_data
 
@@ -131,7 +131,7 @@ async def increment_resin(bot):
           message = f"{user_ping}, you have {res_amount} resin."
 
           response = pprint.block_quote_str(message)
-          await channel.send(embed = response)
+          await channel.send(response)
     
     db[user] = user_data
 
