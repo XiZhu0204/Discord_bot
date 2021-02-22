@@ -1,5 +1,18 @@
 from discord import Embed, Colour
 
+def block_quote_str(in_str, header = "", footer = ""):
+  text = ">>> "
+
+  if header:
+    text += f"{header}\n"
+
+  text += f"{in_str}\n"
+
+  if footer:
+    text += footer
+
+  return text
+
 def embed_str(in_str, header = "", footer = ""):
   text = ""
 
