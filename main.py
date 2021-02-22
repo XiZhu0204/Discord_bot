@@ -58,5 +58,7 @@ async def transformer(ctx):
 async def weeb(ctx):
   await ani_today_cmd(ctx)
 
+
+
 keep_online()
 bot.run(os.getenv('TOKEN'))

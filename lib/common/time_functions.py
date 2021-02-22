@@ -4,7 +4,6 @@ import pytz
 
 working_tz = pytz.timezone("UTC")
 
-
 with open("data.json") as f:
   DATA = json.load(f)
 

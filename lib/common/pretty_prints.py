@@ -1,3 +1,8 @@
+import discord
+
+
+
+
 def code_block_str(input_str, header = "", footer = ""):
   text = "```\n"
 
