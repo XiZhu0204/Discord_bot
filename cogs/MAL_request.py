@@ -34,6 +34,6 @@ class MAL(commands.Cog):
       info = f"{title}\n{url}\n"
       animes.append(info)
     
-    header = "The animes that come out today are:"
+    header = "The animes that come out today are:\n"
     response = pprint.code_block_list(animes, header = header)
     await ctx.send(response)
