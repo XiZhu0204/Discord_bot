@@ -7,7 +7,6 @@ import lib.pretty_prints as pprint
 def setup(bot):
   bot.add_cog(Music(bot))
 
-
 class Music(commands.Cog):
   # ==================================================================================
   #                          Class Variables and Init

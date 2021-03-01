@@ -4,7 +4,6 @@ from discord.ext import commands
 def setup(bot):
   bot.add_cog(Dad(bot))
 
-
 class Dad(commands.Cog):
   # ==================================================================================
   #                          Class Variables and Init

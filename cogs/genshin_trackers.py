@@ -11,7 +11,6 @@ import lib.time_functions as time_func
 def setup(bot):
   bot.add_cog(Genshin_Trackers(bot))
 
-
 class Genshin_Trackers(commands.Cog):
   # ==================================================================================
   #                          Class Variables and Init

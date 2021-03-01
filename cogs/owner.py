@@ -6,7 +6,6 @@ import lib.pretty_prints as pprint
 def setup(bot):
   bot.add_cog(Owner(bot))
 
-
 class Owner(commands.Cog):
   # ==================================================================================
   #                          Class Variables and Init

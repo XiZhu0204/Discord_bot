@@ -5,9 +5,9 @@ from discord.ext import commands
 import lib.pretty_prints as pprint
 import lib.time_functions as time_func
 
+
 def setup(bot):
   bot.add_cog(Genshin_Data(bot))
-
 
 class Genshin_Data(commands.Cog):
   # ==================================================================================
