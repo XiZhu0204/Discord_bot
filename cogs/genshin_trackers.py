@@ -112,12 +112,7 @@ class Genshin_Trackers(commands.Cog):
     await msg.remove_reaction("<:PepeREE:368523735843733516>", self.bot.user)
 
 
-  async def handle_set(self, ctx, msg, user):
-    await msg.add_reaction("⬆️")
-      
-    def check_for_set(reaction, author):
-      return author.name == user and str(reaction.emoji) == "⬆️"
-
+  async def retrieve_resin_amount(self, ctx):
     def check_for_resin_amount(m):
       if m.author == ctx.author and m.channel == ctx.channel:
         try:
@@ -129,6 +124,15 @@ class Genshin_Trackers(commands.Cog):
             raise Exception(pprint.embed_str("Must be valid resin amount"))
           return True
 
+    return await self.bot.wait_for("message", timeout = 30.0, check = check_for_resin_amount)
+
+
+  async def handle_set(self, ctx, msg, user):
+    await msg.add_reaction("⬆️")
+      
+    def check_for_set(reaction, author):
+      return author.name == user and str(reaction.emoji) == "⬆️"
+
     try:
       reaction, author = await self.bot.wait_for("reaction_add", timeout = 30.0, check = check_for_set)
     except asyncio.TimeoutError:
@@ -138,7 +142,7 @@ class Genshin_Trackers(commands.Cog):
       await ctx.send(embed = response)
 
       try:
-        in_val = await self.bot.wait_for("message", timeout = 30.0, check = check_for_resin_amount)
+        in_val = await self.retrieve_resin_amount(ctx)
       except asyncio.TimeoutError:
         response = pprint.embed_str("Too slow, timed out. Try again")
         await ctx.send(embed = response)
@@ -166,27 +170,16 @@ class Genshin_Trackers(commands.Cog):
     def check_for_noti(reaction, author):
       return author.name == user and str(reaction.emoji) == "<:peepoping:809565752768069632>"
 
-    def check_for_resin_amount(m):
-      if m.author == ctx.author and m.channel == ctx.channel:
-        try:
-          n = int(m.content)
-        except ValueError:
-          raise Exception(pprint.embed_str("Must be an integer"))
-        else:
-          if n < 0 or n > 160:
-            raise Exception(pprint.embed_str("Must be valid resin amount"))
-          return True
-
     try:
       reaction, author = await self.bot.wait_for("reaction_add", timeout = 30.0, check = check_for_noti)
     except asyncio.TimeoutError:
       await self.remove_reactions(msg)
     else:
-      response = pprint.embed_str("Enter amount to notify. Default is 150 after 10s timeout.")
+      response = pprint.embed_str("Enter amount to notify. Default is 150 after 30s timeout.")
       await ctx.send(embed = response)
 
       try:
-        in_val = await self.bot.wait_for("message", timeout = 30.0, check = check_for_resin_amount)
+        in_val = await self.retrieve_resin_amount(ctx)
       except asyncio.TimeoutError:
         self.set_noti_value(user, 150)
         response = pprint.embed_str(f"{user} will be notified at 150 resin")
@@ -322,7 +315,6 @@ class Genshin_Trackers(commands.Cog):
       
       header = f"{user} has about"
       footer = "\nReact with ⬆️ to set your resin amount.\nReact with <:peepoping:809565752768069632> to turn on notifications.\nReact with <:PepeREE:368523735843733516> to turn off notifications."
-      print(msg_list)
       response = pprint.embed_list(msg_list, header = header, footer = footer)
       message = await ctx.send(embed = response)
       await asyncio.gather(
