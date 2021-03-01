@@ -35,7 +35,6 @@ class Genshin_Trackers(commands.Cog):
     
     user_data = db[user]
     user_data["resin"] = amount
-    user_data["id"] = user_id
     if "noti" in user_data:
       user_data["noti"]["notified"] = False
     db[user] = user_data
@@ -92,7 +91,6 @@ class Genshin_Trackers(commands.Cog):
     current_time = time_func.get_current_time_for_db()
     user_data = db[user]
     user_data["transformer_used"] = current_time
-    user_data["id"] = user_id
     db[user] = user_data
 
   
