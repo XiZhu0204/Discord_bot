@@ -35,5 +35,5 @@ class MAL(commands.Cog):
       animes.append(info)
     
     header = "The animes that come out today are:"
-    response = pprint.embed_list(animes, header = header)
-    await ctx.send(embed = response)
+    response = pprint.code_block_list(animes, header = header)
+    await ctx.send(response)

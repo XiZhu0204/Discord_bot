@@ -55,6 +55,7 @@ class Genshin_Data(commands.Cog):
       response = pprint.embed_list(list_of_mats, header = header)
       await ctx.send(embed = response)
 
+
   @commands.command()
   async def when(self, ctx, arg):
     arg = arg.capitalize()
