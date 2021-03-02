@@ -16,7 +16,7 @@ class Genshin_Trackers(commands.Cog):
   #                          Class Variables and Init
   # ==================================================================================
   SPAM_PREVENTION = {}
-  WEEK_IN_SECONDS = 604800
+  TRANSFORMER_CD = 597120
 
   def __init__(self, bot):
     self.bot = bot
@@ -235,7 +235,7 @@ class Genshin_Trackers(commands.Cog):
         time_used = time_func.convert_db_time_storage_to_datetime(user_data["transformer_used"])
 
         seconds_passed = time_func.get_difference_in_seconds(current_time, time_used)
-        if seconds_passed > self.WEEK_IN_SECONDS:
+        if seconds_passed > self.TRANSFORMER_CD:
           channel = self.bot.get_channel(805552076763562005)
           user_id = user_data["id"]
           user_ping = f"<@!{user_id}>"
