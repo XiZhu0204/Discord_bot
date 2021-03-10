@@ -139,29 +139,31 @@ class Genshin_Trackers(commands.Cog):
       await self.remove_reactions(msg)
     else:
       response = pprint.embed_str("Enter resin amount")
-      await ctx.send(embed = response)
 
-      try:
-        in_val = await self.retrieve_resin_amount(ctx)
-      except asyncio.TimeoutError:
-        response = pprint.embed_str("Too slow, timed out. Try again")
-        await ctx.send(embed = response)
-      except Exception as e:
-        await ctx.send(embed = e.args[0])
-      else:
-        in_amount = int(in_val.content)
-        self.set_resin(user, in_amount, ctx.author.id)
+      while True:
+        try:
+          await ctx.send(embed = response)
+          in_val = await self.retrieve_resin_amount(ctx)
+          # Add new time back to SPAM_PREVENTION to prevent calling command while waiting
+          self.SPAM_PREVENTION[user] = time.time()
+        except asyncio.TimeoutError:
+          response = pprint.embed_str("Too slow, timed out. Try again")
+          await ctx.send(embed = response)
+          break
+        except Exception as e:
+          await ctx.send(embed = e.args[0])
+        else:
+          in_amount = int(in_val.content)
+          self.set_resin(user, in_amount, ctx.author.id)
 
-        header = "Resin set at"
-        footer = f"for {user}"
-        noti_str = self.generate_time_to_noti_msg(user)
-        if noti_str:
-          footer += f"\n{noti_str}"
-        response = pprint.embed_str(in_amount, header = header, footer = footer)
-        await ctx.send(embed = response)
-      finally:
-        # stop user from calling set again since wait_for is no longer active
-        await msg.remove_reaction("⬆️", self.bot.user)
+          header = "Resin set at"
+          footer = f"for {user}"
+          noti_str = self.generate_time_to_noti_msg(user)
+          if noti_str:
+            footer += f"\n{noti_str}"
+          response = pprint.embed_str(in_amount, header = header, footer = footer)
+          await ctx.send(embed = response)
+          break
 
 
   async def handle_notif(self, ctx, msg, user):
@@ -176,24 +178,27 @@ class Genshin_Trackers(commands.Cog):
       await self.remove_reactions(msg)
     else:
       response = pprint.embed_str("Enter amount to notify. Default is 150 after 30s timeout.")
-      await ctx.send(embed = response)
 
-      try:
-        in_val = await self.retrieve_resin_amount(ctx)
-      except asyncio.TimeoutError:
-        self.set_noti_value(user, 150)
-        response = pprint.embed_str(f"{user} will be notified at 150 resin")
-        await ctx.send(embed = response)
-      except Exception as e:
-        await ctx.send(embed = e.args[0])
-      else:
-        in_amount = int(in_val.content)
-        self.set_noti_value(user, in_amount)
-        response = pprint.embed_str(f"{user} will be notified at {in_amount} resin")
-        await ctx.send(embed = response)
-      finally:
-        # stop user from calling noti again since wait_for is no longer active
-        await msg.remove_reaction("<:peepoping:809565752768069632>", self.bot.user)
+      while True:
+        # keep asking for values until timeout or valid one provided
+        try:
+          await ctx.send(embed = response)
+          in_val = await self.retrieve_resin_amount(ctx)
+          # Add new time back to SPAM_PREVENTION to prevent calling command while waiting
+          self.SPAM_PREVENTION[user] = time.time()
+        except asyncio.TimeoutError:
+          self.set_noti_value(user, 150)
+          response = pprint.embed_str(f"{user} will be notified at 150 resin")
+          await ctx.send(embed = response)
+          break
+        except Exception as e:
+          await ctx.send(embed = e.args[0])
+        else:
+          in_amount = int(in_val.content)
+          self.set_noti_value(user, in_amount)
+          response = pprint.embed_str(f"{user} will be notified at {in_amount} resin")
+          await ctx.send(embed = response)
+          break  
 
 
   async def notif_off(self, ctx, msg, user):
