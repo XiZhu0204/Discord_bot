@@ -109,7 +109,8 @@ class Genshin_Trackers(commands.Cog):
   
   def eight_min_passed(self, last_update):
     current_time = time_func.get_current_time()
-    time_passed = time_func.get_difference_in_seconds(current_time, last_update) 
+    datetime_last_update = time_func.convert_db_time_storage_to_datetime(last_update)
+    time_passed = time_func.get_difference_in_seconds(current_time, datetime_last_update) 
     if time_passed >= self.EIGHT_MIN_IN_SEC:
       return True
     else:
@@ -263,9 +264,6 @@ class Genshin_Trackers(commands.Cog):
 
 
   async def increment_resin(self):
-    if "last_update" not in db.keys():
-        db["last_update"] = time_func.get_current_time()
-    
     last_updated = db["last_update"]
     if not self.eight_min_passed(last_updated):
       return
@@ -273,7 +271,7 @@ class Genshin_Trackers(commands.Cog):
     for user in db.keys():
       if user == "last_update":
         # last_update keeps track of time in database, update time here
-        db["last_update"] = time_func.get_current_time()
+        db["last_update"] = time_func.get_current_time_for_db()
         continue
 
       user_data = db[user]
