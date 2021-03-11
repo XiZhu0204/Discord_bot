@@ -1,4 +1,5 @@
 import json
+import math
 from datetime import datetime
 import pytz
 
@@ -32,7 +33,7 @@ def convert_db_time_storage_to_datetime(time_stored, tz = working_tz):
 
 def get_difference_in_seconds(time_1, time_2):
   diff = time_1 - time_2
-  return diff.total_seconds()
+  return abs(diff.total_seconds())
 
 def hours_minutes_till_midnight(tz = working_tz):
   now = datetime.now(tz)

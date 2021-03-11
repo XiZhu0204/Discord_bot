@@ -17,6 +17,7 @@ class Genshin_Trackers(commands.Cog):
   # ==================================================================================
   SPAM_PREVENTION = {}
   TRANSFORMER_CD = 597120
+  EIGHT_MIN_IN_SEC = 450    # slight offset to allow for error
 
   def __init__(self, bot):
     self.bot = bot
@@ -93,7 +94,7 @@ class Genshin_Trackers(commands.Cog):
     user_data["transformer_used"] = current_time
     db[user] = user_data
 
-  
+
   # ==================================================================================
   #                                  Class Methods
   # ==================================================================================
@@ -105,6 +106,15 @@ class Genshin_Trackers(commands.Cog):
     else:
       return None
   
+  
+  def eight_min_passed(self, last_update):
+    current_time = time_func.get_current_time()
+    time_passed = time_func.get_difference_in_seconds(current_time, last_update) 
+    if time_passed >= self.EIGHT_MIN_IN_SEC:
+      return True
+    else:
+      return False
+
 
   async def remove_reactions(self, msg):
     await msg.remove_reaction("⬆️", self.bot.user)
@@ -253,7 +263,19 @@ class Genshin_Trackers(commands.Cog):
 
 
   async def increment_resin(self):
+    if "last_update" not in db.keys():
+        db["last_update"] = time_func.get_current_time()
+    
+    last_updated = db["last_update"]
+    if not self.eight_min_passed(last_updated):
+      return
+    
     for user in db.keys():
+      if user == "last_update":
+        # last_update keeps track of time in database, update time here
+        db["last_update"] = time_func.get_current_time()
+        continue
+
       user_data = db[user]
 
       if user_data["resin"] < 160:
@@ -275,6 +297,8 @@ class Genshin_Trackers(commands.Cog):
             await channel.send(response)
       
       db[user] = user_data
+      if "last_update" not in db.keys():
+        db["last_update"] = time_func.get_current_time()
 
 
   @tasks.loop(minutes = 8.0)
