@@ -285,11 +285,9 @@ class Genshin_Trackers(commands.Cog):
             await channel.send(response)
       
       db[user] = user_data
-      if "last_update" not in db.keys():
-        db["last_update"] = time_func.get_current_time()
 
 
-  @tasks.loop(seconds = 8.0)
+  @tasks.loop(minutes = 8.0)
   async def db_update(self):
     await self.increment_resin()
     await self.check_transformers()
