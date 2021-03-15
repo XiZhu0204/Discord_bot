@@ -91,6 +91,7 @@ class Genshin_Trackers(commands.Cog):
     current_time = time_func.get_current_time_for_db()
     user_data = db[user]
     user_data["transformer_used"] = current_time
+    user_data["id"] = user_id
     db[user] = user_data
 
 
@@ -235,6 +236,7 @@ class Genshin_Trackers(commands.Cog):
   # ==================================================================================
   @commands.Cog.listener()
   async def on_ready(self):
+    print("Cabbage")
     self.db_update.start()
 
 
@@ -289,6 +291,7 @@ class Genshin_Trackers(commands.Cog):
 
   @tasks.loop(minutes = 8.0)
   async def db_update(self):
+    print("Potato")
     await self.increment_resin()
     await self.check_transformers()
 
