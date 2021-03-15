@@ -14,7 +14,7 @@ class MAL(commands.Cog):
   # ==================================================================================
   #                          Class Variables and Init
   # ==================================================================================
-  working_tz = pytz.timezone("Asia/Tokyo")
+  working_tz = pytz.timezone("Etc/GMT+9")
 
   def __init__(self, bot):
     self.bot = bot

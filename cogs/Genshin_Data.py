@@ -13,7 +13,7 @@ class Genshin_Data(commands.Cog):
   # ==================================================================================
   #                          Class Variables and Init
   # ==================================================================================
-  working_tz = pytz.timezone("America/Yakutat")
+  working_tz = pytz.timezone("Etc/GMT-8")
   with open("data.json") as f:
     data = json.load(f)
 

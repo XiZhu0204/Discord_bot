@@ -2,7 +2,7 @@ import json
 from datetime import datetime
 import pytz
 
-working_tz = pytz.timezone("UTC")
+working_tz = pytz.timezone("Etc/UTC")
 
 with open("data.json") as f:
   DATA = json.load(f)

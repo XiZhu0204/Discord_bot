@@ -1,9 +1,5 @@
 from discord.ext import commands
 import os
-from replit import db
-
-for key in db.keys():
-  print(f"{key}: {db[key]}")
 
 from lib.keep_online import keep_online
 
