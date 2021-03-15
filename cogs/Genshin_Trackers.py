@@ -17,6 +17,7 @@ class Genshin_Trackers(commands.Cog):
   # ==================================================================================
   SPAM_PREVENTION = {}
   TRANSFORMER_CD = 597120
+  EIGHT_MIN_IN_SEC = 450   # slightly shorter to allow for error
 
   def __init__(self, bot):
     self.bot = bot
@@ -271,6 +272,7 @@ class Genshin_Trackers(commands.Cog):
       if user == "last_update":
         # last_update keeps track of time in database, update time here
         db["last_update"] = time_func.get_current_time_for_db()
+        print("updated time")
         continue
 
       user_data = db[user]
