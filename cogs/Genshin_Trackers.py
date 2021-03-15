@@ -17,7 +17,6 @@ class Genshin_Trackers(commands.Cog):
   # ==================================================================================
   SPAM_PREVENTION = {}
   TRANSFORMER_CD = 597120
-  EIGHT_MIN_IN_SEC = 450    # slight offset to allow for error
 
   def __init__(self, bot):
     self.bot = bot
@@ -236,6 +235,10 @@ class Genshin_Trackers(commands.Cog):
   # ==================================================================================
   @commands.Cog.listener()
   async def on_ready(self):
+    last_updated = db["last_update"]
+    if not self.eight_min_passed(last_updated):
+      return
+    
     self.db_update.start()
 
 
@@ -264,10 +267,6 @@ class Genshin_Trackers(commands.Cog):
 
 
   async def increment_resin(self):
-    last_updated = db["last_update"]
-    if not self.eight_min_passed(last_updated):
-      return
-    
     for user in db.keys():
       if user == "last_update":
         # last_update keeps track of time in database, update time here
