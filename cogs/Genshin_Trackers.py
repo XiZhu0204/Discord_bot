@@ -250,6 +250,7 @@ class Genshin_Trackers(commands.Cog):
   @commands.Cog.listener()
   async def on_ready(self):
     self.db_update.start()
+    logging.debug("Bot Rebooted")
 
 
   # ==================================================================================
