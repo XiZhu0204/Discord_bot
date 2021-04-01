@@ -1,4 +1,5 @@
 from discord.ext import commands
+from replit import db
 
 import lib.pretty_prints as pprint
 
@@ -62,3 +63,14 @@ class Owner(commands.Cog):
     else:
       response = pprint.embed_str(f"Successfully reloaded {cog_to_reload}")
       await ctx.send(embed = response)
+
+  @commands.command(hidden = True)
+  @commands.is_owner()
+  async def show_db(self, ctx):
+    output = []
+    for key in db.keys():
+      msg = f"{key}: {db[key]}"
+      output.append(msg)
+    
+    response = pprint.code_block_list(output)
+    await ctx.send(response)

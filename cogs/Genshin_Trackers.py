@@ -1,5 +1,7 @@
 import asyncio
 import time
+import logging
+import logging.config
 
 from replit import db
 from discord.ext import commands, tasks
@@ -7,6 +9,16 @@ from discord.ext import commands, tasks
 import lib.pretty_prints as pprint
 import lib.time_functions as time_func
 
+logging.config.dictConfig({
+    'version': 1,
+    'disable_existing_loggers': True,
+})
+logging.basicConfig(
+    filename='debug.log',
+    format='[%(asctime)s]: %(message)s', 
+    datefmt='%m/%d/%Y %H:%M:%S',
+    level=logging.DEBUG
+)
 
 def setup(bot):
   bot.add_cog(Genshin_Trackers(bot))
@@ -17,6 +29,7 @@ class Genshin_Trackers(commands.Cog):
   # ==================================================================================
   SPAM_PREVENTION = {}
   TRANSFORMER_CD = 597120
+  
 
   def __init__(self, bot):
     self.bot = bot
@@ -236,7 +249,6 @@ class Genshin_Trackers(commands.Cog):
   # ==================================================================================
   @commands.Cog.listener()
   async def on_ready(self):
-    print("Cabbage")
     self.db_update.start()
 
 
@@ -262,6 +274,8 @@ class Genshin_Trackers(commands.Cog):
           await channel.send(response)
           user_data.pop("transformer_used", None)
           db[user] = user_data
+    
+    logging.debug("Checked transformer times.")
 
 
   async def increment_resin(self):
@@ -288,10 +302,11 @@ class Genshin_Trackers(commands.Cog):
       
       db[user] = user_data
 
+    logging.debug("Resin increment successful.")
 
   @tasks.loop(minutes = 8.0)
   async def db_update(self):
-    print("Potato")
+    logging.debug("Begin database update.")
     await self.increment_resin()
     await self.check_transformers()
 
