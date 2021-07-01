@@ -47,11 +47,11 @@ class Genshin_Data(commands.Cog):
   async def mats(self, ctx):
     weekday = time_func.get_weekday(self.working_tz)
     if weekday == "Sunday":
-      response = pprint.embed_str("It's Sunday you cringe kid.")
+      response = pprint.embed_str("It's Sunday.")
       await ctx.send(embed = response)
     else:
       list_of_mats = self.get_farmable_mats(weekday)
-      header = "You can waste your time today farming:"
+      header = "You can farm today:"
       response = pprint.embed_list(list_of_mats, header = header)
       await ctx.send(embed = response)
 
@@ -65,7 +65,7 @@ class Genshin_Data(commands.Cog):
       if list_of_days:
         list_of_days.append("Sunday")
         # non empty array, indicating that retrieval was successful
-        header = f"Greetings you gacha cringe, {arg} can be farmed on:"
+        header = f"{arg} can be farmed on:"
         response = pprint.embed_list(list_of_days, header = header)
         await ctx.send(embed = response)
       else:
@@ -79,7 +79,7 @@ class Genshin_Data(commands.Cog):
       response = pprint.embed_str(time_till_reset_str, header = header)
       await ctx.send(embed = response)
     else:
-      header = "Spell correctly xd. The materials list is:"
+      header = "Unknown material. The materials list is:"
       footer = "\nor get the time till daily reset with:\nReset"
       response = pprint.embed_list(material_list, header = header, footer = footer)
       await ctx.send(embed = response)

@@ -1,5 +1,26 @@
 from discord.ext import commands
 import os
+from replit import db
+import json
+
+# below are to export and load db with JSON when repl causes issues
+
+'''
+res = {}
+for key in db.keys():
+  res[key] = db[key]
+
+with open("res.json", "w") as f:
+  f.write(json.dumps(res, indent = 4))
+'''
+
+'''
+with open("res.json", "r") as f:
+  data = json.load(f)
+
+for key in data:
+  db[key] = data[key]
+'''
 
 from lib.keep_online import keep_online
 

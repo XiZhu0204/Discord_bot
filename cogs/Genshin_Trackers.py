@@ -13,15 +13,11 @@ logging.config.dictConfig({
     'version': 1,
     'disable_existing_loggers': True,
 })
-logging.basicConfig(
-    filename='debug.log',
-    format='[%(asctime)s]: %(message)s', 
-    datefmt='%m/%d/%Y %H:%M:%S',
-    level=logging.DEBUG
-)
+
 
 def setup(bot):
   bot.add_cog(Genshin_Trackers(bot))
+
 
 class Genshin_Trackers(commands.Cog):
   # ==================================================================================
@@ -29,7 +25,12 @@ class Genshin_Trackers(commands.Cog):
   # ==================================================================================
   SPAM_PREVENTION = {}
   TRANSFORMER_CD = 597120
-  
+  logging.basicConfig(
+    filename='debug.log',
+    format='[%(asctime)s]: %(message)s', 
+    datefmt='%m/%d/%Y %H:%M:%S',
+    level=logging.DEBUG
+)
 
   def __init__(self, bot):
     self.bot = bot
@@ -349,8 +350,8 @@ class Genshin_Trackers(commands.Cog):
       
       header = f"{user} has about"
       footer = "\nReact with ⬆️ to set your resin amount.\nReact with <:peepoping:809565752768069632> to turn on notifications.\nReact with <:PepeREE:368523735843733516> to turn off notifications."
-      response = pprint.embed_list(msg_list, header = header, footer = footer)
-      message = await ctx.send(embed = response)
+      response = pprint.block_quote_list(msg_list, header = header, footer = footer)
+      message = await ctx.send(response)
       await asyncio.gather(
         self.handle_set(ctx, message, user),
         self.handle_notif(ctx, message, user),
